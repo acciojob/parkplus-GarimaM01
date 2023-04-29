@@ -19,32 +19,33 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment pay(Integer reservationId, int amountSent, String mode) throws Exception {
 
-        Reservation reservation=null;
-        Integer bill=reservation.getSpot().getPricePerHour()*reservation.getNumberOfHours();
-        if(amountSent < bill){
+        Reservation reservation;
+        try {
+            reservation=reservationRepository2.findById(reservationId).get();
+        }catch (Exception e){
+            throw new Exception("Reservation id not valid");
+        }
+        if(amountSent < reservation.getSpot().getPricePerHour()*reservation.getNumberOfHours())
             throw new Exception("Insufficient Amount");
+
+        PaymentMode Mode=null;
+        if(mode.toUpperCase().equals(PaymentMode.CASH.toString())){
+            Mode=PaymentMode.CASH;
+        } else if (mode.toUpperCase().equals(PaymentMode.CARD.toString())) {
+            Mode=PaymentMode.CARD;
+        } else if (mode.toUpperCase().equals(PaymentMode.UPI.toString())) {
+            Mode=PaymentMode.UPI;
+        }else {
+            throw new Exception("Payment mode not detected");
         }
 
-        //If the mode contains a string other than "cash", "card", or "upi" (any character in uppercase or lowercase), throw "Payment mode not detected" exception.
-        if (!(mode.equalsIgnoreCase("cash") || mode.equalsIgnoreCase("card") || mode.equalsIgnoreCase("upi"))){
-            throw  new Exception("Payment mode not detected");
-        }
-        Payment payment = new Payment();
-        if(mode.equals("cash"))
-            payment.setPaymentMode(PaymentMode.CASH);
-
-        else if(mode.equals("card"))
-            payment.setPaymentMode(PaymentMode.CARD);
-
-        else
-            payment.setPaymentMode(PaymentMode.UPI);
-
-        payment.setReservation(reservation);
+        Payment payment=new Payment();
         payment.setPaymentCompleted(true);
-        reservation.setPayment(payment);
+        payment.setPaymentMode(Mode);
+        payment.setReservation(reservation);
+
         reservationRepository2.save(reservation);
 
         return payment;
-
     }
 }

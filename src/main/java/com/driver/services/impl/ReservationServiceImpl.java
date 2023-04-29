@@ -23,29 +23,31 @@ public class ReservationServiceImpl implements ReservationService {
     ParkingLotRepository parkingLotRepository3;
     @Override
     public Reservation reserveSpot(Integer userId, Integer parkingLotId, Integer timeInHours, Integer numberOfWheels) throws Exception {
-        User customer;
-        ParkingLot parkingspace;
+        User user;
+        ParkingLot parkingLot;
         try {
-            customer=userRepository3.findById(userId).get();
-            parkingspace=parkingLotRepository3.findById(parkingLotId).get();
+            user=userRepository3.findById(userId).get();
+            parkingLot=parkingLotRepository3.findById(parkingLotId).get();
         }catch (Exception e){
             throw new Exception("Cannot make reservation");
         }
+
         Spot occupiedSpot=null;
-        int price=Integer.MAX_VALUE;
 
-        for(Spot ispace: parkingspace.getSpotList()){
+        int lowPrice=Integer.MAX_VALUE;
+
+        for(Spot spot: parkingLot.getSpotList()){
             int wheels=0;
-            if(ispace.getSpotType() == SpotType.TWO_WHEELER)
+            if(spot.getSpotType() == SpotType.TWO_WHEELER)
                 wheels=2;
-            if(ispace.getSpotType() == SpotType.FOUR_WHEELER)
+            if(spot.getSpotType() == SpotType.FOUR_WHEELER)
                 wheels=4;
-            if(ispace.getSpotType() == SpotType.OTHERS)
-                wheels=Integer.MAX_VALUE;
+            if(spot.getSpotType() == SpotType.OTHERS)
+                wheels=24;
 
-            if(!ispace.getOccupied() && numberOfWheels <= wheels && ispace.getPricePerHour()*timeInHours < price) {
-                price=ispace.getPricePerHour()*timeInHours;
-                occupiedSpot=ispace;
+            if(!spot.getOccupied() && numberOfWheels <= wheels && spot.getPricePerHour()*timeInHours < lowPrice) {
+                lowPrice=spot.getPricePerHour()*timeInHours;
+                occupiedSpot=spot;
             }
         }
         if(occupiedSpot == null)
@@ -53,17 +55,16 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation reservation=new Reservation();
         reservation.setNumberOfHours(timeInHours);
-        reservation.setUser(customer);
+        reservation.setUser(user);
         reservation.setSpot(occupiedSpot);
 
-        customer.getReservationList().add(reservation);
+        user.getReservationList().add(reservation);
         occupiedSpot.getReservationList().add(reservation);
 
         occupiedSpot.setOccupied(true);
 
-        //reservationRepository3.save(reservation);
         spotRepository3.save(occupiedSpot);
-        userRepository3.save(customer);
+        userRepository3.save(user);
 
         return  reservation;
     }

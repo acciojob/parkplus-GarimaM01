@@ -38,6 +38,6 @@ public class PaymentController {
         payment.setPaymentStatus(PaymentStatus.COMPLETED);
         paymentService.updatePayment(payment);
         return payment;
-//        return  paymentService.pay(reservationId, amountSent, mode);
+        //return  paymentService.pay(reservationId, amountSent, mode);
     }
 }

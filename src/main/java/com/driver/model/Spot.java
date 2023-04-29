@@ -1,5 +1,6 @@
 package com.driver.model;
-
+import javax.persistence.*;
+import java.util.*;
 @Entity
 public class Spot {
     @Id

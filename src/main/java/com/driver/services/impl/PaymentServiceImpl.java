@@ -19,30 +19,32 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment pay(Integer reservationId, int amountSent, String mode) throws Exception {
 
-        Reservation reservation;
-        try {
-            reservation=reservationRepository2.findById(reservationId).get();
-        }catch (Exception e){
-            throw new Exception("Reservation id not valid");
-        }
-        if(amountSent < reservation.getSpot().getPricePerHour()*reservation.getNumberOfHours())
-            throw new Exception("Insufficient Amount");
+        PaymentMode paymentMode;
+        Reservation reservation = reservationRepository2.findById(reservationId).get();
+        reservation.getSpot().setOccupied(false);
 
-        PaymentMode Mode=null;
-        if(mode.toUpperCase().equals(PaymentMode.CASH.toString())){
-            Mode=PaymentMode.CASH;
-        } else if (mode.toUpperCase().equals(PaymentMode.CARD.toString())) {
-            Mode=PaymentMode.CARD;
-        } else if (mode.toUpperCase().equals(PaymentMode.UPI.toString())) {
-            Mode=PaymentMode.UPI;
-        }else {
+        if(mode.equalsIgnoreCase("cash")){
+            paymentMode=PaymentMode.CASH;
+        }
+        else if (mode.equalsIgnoreCase("card")) {
+            paymentMode=PaymentMode.CARD;
+        }
+        else if (mode.equalsIgnoreCase("upi")) {
+            paymentMode=PaymentMode.UPI;
+        }
+        else{
             throw new Exception("Payment mode not detected");
         }
 
-        Payment payment=new Payment();
-        payment.setPaymentCompleted(true);
-        payment.setPaymentMode(Mode);
+        int bill = reservation.getSpot().getPricePerHour()*reservation.getNumberOfHours();
+        if(amountSent<bill){
+            throw new Exception("Insufficient Amount");
+        }
+
+        Payment payment = new Payment(true,paymentMode);
         payment.setReservation(reservation);
+        reservation.setPayment(payment);
+
 
         reservationRepository2.save(reservation);
 

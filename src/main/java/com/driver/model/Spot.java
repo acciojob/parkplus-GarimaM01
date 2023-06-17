@@ -2,56 +2,32 @@ package com.driver.model;
 import javax.persistence.*;
 import java.util.*;
 @Entity
+@Table
 public class Spot {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Enumerated(EnumType.STRING)
     private SpotType spotType;
-
     private int pricePerHour;
     private boolean occupied;
-
     @ManyToOne
     @JoinColumn
-    ParkingLot parkingLot;
-
-    @OneToMany(mappedBy = "spot",cascade = CascadeType.ALL)
-    List<Reservation> reservationList=new ArrayList<>();
+    private ParkingLot parkingLot;
+    @OneToMany(mappedBy = "spot", cascade = CascadeType.ALL)
+    private List<Reservation> reservationList=new ArrayList<>();
 
     public Spot() {
     }
 
-    public Spot(SpotType spotType, int pricePerHour, boolean occupied) {
-        this.spotType = spotType;
-        this.pricePerHour = pricePerHour;
-        this.occupied = occupied;
-    }
-
-    public Spot(SpotType spotType, int pricePerHour, boolean occupied,
-                ParkingLot parkingLot, List<Reservation> reservationList) {
+    public Spot(int id, SpotType spotType, int pricePerHour, Boolean occupied, ParkingLot parkingLot, List<Reservation> reservationList) {
+        this.id = id;
         this.spotType = spotType;
         this.pricePerHour = pricePerHour;
         this.occupied = occupied;
         this.parkingLot = parkingLot;
         this.reservationList = reservationList;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public SpotType getSpotType() {
-        return spotType;
-    }
-
-    public void setSpotType(SpotType spotType) {
-        this.spotType = spotType;
     }
 
     public int getPricePerHour() {
@@ -60,6 +36,14 @@ public class Spot {
 
     public void setPricePerHour(int pricePerHour) {
         this.pricePerHour = pricePerHour;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean getOccupied() {
@@ -84,5 +68,13 @@ public class Spot {
 
     public void setReservationList(List<Reservation> reservationList) {
         this.reservationList = reservationList;
+    }
+
+    public SpotType getSpotType() {
+        return spotType;
+    }
+
+    public void setSpotType(SpotType spotType) {
+        this.spotType = spotType;
     }
 }

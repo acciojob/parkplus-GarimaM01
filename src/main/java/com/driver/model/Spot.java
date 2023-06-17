@@ -1,22 +1,25 @@
 package com.driver.model;
-import javax.persistence.*;
-import java.util.*;
-@Entity
-@Table
-public class Spot {
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class Spot {
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Enumerated(EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     private SpotType spotType;
     private int pricePerHour;
-    private boolean occupied;
+    Boolean occupied=false;
+
     @ManyToOne
     @JoinColumn
-    private ParkingLot parkingLot;
-    @OneToMany(mappedBy = "spot", cascade = CascadeType.ALL)
-    private List<Reservation> reservationList=new ArrayList<>();
+    ParkingLot parkingLot;
+
+    @OneToMany(mappedBy = "spot",cascade = CascadeType.ALL)
+    List<Reservation> reservationList=new ArrayList<>();
 
     public Spot() {
     }
@@ -30,14 +33,6 @@ public class Spot {
         this.reservationList = reservationList;
     }
 
-    public int getPricePerHour() {
-        return pricePerHour;
-    }
-
-    public void setPricePerHour(int pricePerHour) {
-        this.pricePerHour = pricePerHour;
-    }
-
     public int getId() {
         return id;
     }
@@ -46,11 +41,27 @@ public class Spot {
         this.id = id;
     }
 
-    public boolean getOccupied() {
+    public SpotType getSpotType() {
+        return spotType;
+    }
+
+    public void setSpotType(SpotType spotType) {
+        this.spotType = spotType;
+    }
+
+    public int getPricePerHour() {
+        return pricePerHour;
+    }
+
+    public void setPricePerHour(int pricePerHour) {
+        this.pricePerHour = pricePerHour;
+    }
+
+    public Boolean getOccupied() {
         return occupied;
     }
 
-    public void setOccupied(boolean occupied) {
+    public void setOccupied(Boolean occupied) {
         this.occupied = occupied;
     }
 
@@ -68,13 +79,5 @@ public class Spot {
 
     public void setReservationList(List<Reservation> reservationList) {
         this.reservationList = reservationList;
-    }
-
-    public SpotType getSpotType() {
-        return spotType;
-    }
-
-    public void setSpotType(SpotType spotType) {
-        this.spotType = spotType;
     }
 }

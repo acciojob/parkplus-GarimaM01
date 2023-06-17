@@ -4,22 +4,22 @@ import javax.persistence.*;
 
 @Entity
 public class Reservation {
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private int numberOfHours;
 
     @ManyToOne
     @JoinColumn
-    private User user;
+    User user;
 
     @ManyToOne
     @JoinColumn
-    private Spot spot;
+    Spot spot;
 
     @OneToOne(mappedBy = "reservation",cascade = CascadeType.ALL)
-    private Payment payment;
+    Payment payment;
 
     public Reservation() {
     }
@@ -31,7 +31,6 @@ public class Reservation {
         this.spot = spot;
         this.payment = payment;
     }
-
 
     public int getId() {
         return id;
@@ -47,6 +46,14 @@ public class Reservation {
 
     public void setNumberOfHours(int numberOfHours) {
         this.numberOfHours = numberOfHours;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Spot getSpot() {
@@ -65,11 +72,4 @@ public class Reservation {
         this.payment = payment;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
